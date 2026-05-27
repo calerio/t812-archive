@@ -10,3 +10,6 @@ __pycache__/
 
 # Owner-only MCP config (not needed by contributors)
 .mcp.json
+
+# Kept locally but excluded from the public repo + the site (trading cards, bengladino)
+excluded/

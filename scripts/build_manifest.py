@@ -77,7 +77,10 @@ def build_item(media: Path) -> dict:
     return {
         "file": rel,
         "kind": "doc" if media.suffix.lower() in DOC_EXTS else "image",
-        "title": meta.get("title") or title_from_filename(media.stem),
+        # A photo's title is its filename verbatim (case and spacing as typed);
+        # rename a file to the person's name and that's exactly what shows.
+        # A sidecar `title:` still overrides it.
+        "title": meta.get("title") or media.stem,
         "date": meta.get("date", ""),
         "by": meta.get("by", ""),
         "caption": meta.get("caption", ""),

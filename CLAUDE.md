@@ -6,6 +6,12 @@ trading cards, plus a moderated **memory wall** where visitors leave notes.
 - **Live site:** https://calerio.github.io/t812-archive/ (GitHub Pages)
 - **Repo:** https://github.com/calerio/t812-archive (public, but `noindex` + `robots.txt` — keep it unlisted, don't advertise)
 
+## Session handoff
+A `handoff.md` exists in the project root, written at the end of a previous Claude Code session
+(last updated: 2026-05-27). **At the start of any new session, read `handoff.md` first**, continue
+from the state it describes, avoid repeating the failed approaches it documents, and re-evaluate the
+problem with fresh perspective before acting.
+
 ## ⚠️ Hard rules
 - **NEVER change the orientation of any Polaroid.** Some were deliberately set
   sideways by Valerio. The `--orient` flag on `split_scan.py` exists but stays

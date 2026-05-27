@@ -111,7 +111,11 @@ def main() -> None:
             if any(part.startswith((".", "_")) for part in rel.parts):
                 continue
             coll = build_collection(folder)
-            if coll["items"] or (folder / "_collection.txt").exists():
+            has_subdirs = any(p.is_dir() for p in folder.iterdir())
+            # Include a folder if it holds photos, or if it's a declared but
+            # genuinely empty leaf (e.g. letters/). Skip pure container folders
+            # that only group sub-collections (e.g. polaroids/ after grouping).
+            if coll["items"] or ((folder / "_collection.txt").exists() and not has_subdirs):
                 collections.append(coll)
 
     manifest = {

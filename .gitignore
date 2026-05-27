@@ -7,3 +7,6 @@ __pycache__/
 # NEVER commit the Supabase secret/service_role key
 .supabase-service-key
 
+
+# Owner-only MCP config (not needed by contributors)
+.mcp.json

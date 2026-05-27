@@ -22,6 +22,7 @@ Requires: opencv-python (or opencv-python-headless) and numpy — see requiremen
 from __future__ import annotations
 
 import argparse
+import json
 import sys
 from pathlib import Path
 
@@ -32,6 +33,7 @@ except ImportError:
     sys.exit("Missing dependencies. Run:  python3 -m pip install -r requirements.txt")
 
 ROOT = Path(__file__).resolve().parent.parent
+PROVENANCE = ROOT / "provenance.json"  # maps each crop -> the original scan it came from
 
 
 def order_corners(pts: "np.ndarray") -> "np.ndarray":
@@ -182,7 +184,8 @@ def read_pages(path: Path):
 
 
 def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
-                 pad: int, orient: bool, debug_path, quality: int) -> int:
+                 pad: int, orient: bool, debug_path, quality: int,
+                 source_rel: str = "", prov: dict | None = None) -> int:
     boxes = detect_photos(img, bg, min_area_frac, debug_path)
     if not boxes:
         print(f"  no photos detected (try --bg light, or lower --min-area)")
@@ -201,6 +204,8 @@ def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
                 continue
         out = out_dir / f"{pfx}-{idx:02d}.jpg"
         cv2.imwrite(str(out), crop, [cv2.IMWRITE_JPEG_QUALITY, quality])
+        if prov is not None and source_rel:
+            prov[out.relative_to(ROOT).as_posix()] = source_rel
         print(f"  → {out.relative_to(ROOT) if ROOT in out.parents else out}")
         idx += 1
         saved += 1
@@ -209,12 +214,16 @@ def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
 
 def process(path: Path, out_dir: Path, prefix: str | None, bg: str,
             min_area_frac: float, pad: int, orient: bool, debug: bool,
-            quality: int) -> int:
+            quality: int, prov: dict | None = None) -> int:
     pages = read_pages(path)
     if not pages:
         print(f"!! could not read {path}", file=sys.stderr)
         return 0
     base = prefix or path.stem
+    try:
+        source_rel = path.resolve().relative_to(ROOT).as_posix()
+    except ValueError:
+        source_rel = path.name
     out_dir.mkdir(parents=True, exist_ok=True)
     multi = len(pages) > 1
     if multi:
@@ -225,7 +234,7 @@ def process(path: Path, out_dir: Path, prefix: str | None, bg: str,
         pfx = f"{base}-p{n}" if multi else base
         debug_path = (out_dir / f"{pfx}-debug.jpg") if debug else None
         saved += process_page(img, out_dir, pfx, bg, min_area_frac, pad,
-                              orient, debug_path, quality)
+                              orient, debug_path, quality, source_rel, prov)
     return saved
 
 
@@ -252,13 +261,22 @@ def main() -> None:
     args = ap.parse_args()
 
     out_dir = Path(args.into).expanduser().resolve()
+    prov = {}
+    if PROVENANCE.exists():
+        try:
+            prov = json.loads(PROVENANCE.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            prov = {}
     total = 0
     for s in args.scans:
         p = Path(s).expanduser()
         print(f"{p.name}:")
         total += process(p, out_dir, args.prefix, args.bg, args.min_area,
-                         args.pad, args.orient, args.debug, args.quality)
+                         args.pad, args.orient, args.debug, args.quality, prov)
 
+    if total:
+        PROVENANCE.write_text(json.dumps(prov, indent=2, ensure_ascii=False) + "\n",
+                              encoding="utf-8")
     print(f"\nDone — {total} photo(s) written to {out_dir}.")
     if total:
         print("Next: add a .txt sidecar for any you want to caption, then run "

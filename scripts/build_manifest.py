@@ -27,11 +27,16 @@ from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
 ARCHIVE = ROOT / "archive"
+ORIGINALS = ROOT / "originals"
 MANIFEST = ROOT / "manifest.json"
+PROVENANCE = ROOT / "provenance.json"
 
 IMAGE_EXTS = {".jpg", ".jpeg", ".png", ".gif", ".webp", ".svg", ".avif"}
 DOC_EXTS = {".pdf"}
 MEDIA_EXTS = IMAGE_EXTS | DOC_EXTS
+
+# crop path -> original scan path; loaded once in main()
+PROV: dict[str, str] = {}
 
 
 def parse_sidecar(path: Path) -> dict:
@@ -68,14 +73,16 @@ def pretty_part(part: str) -> str:
 def build_item(media: Path) -> dict:
     meta = parse_sidecar(media.with_suffix(".txt"))
     tags = [t.strip() for t in meta.get("tags", "").split(",") if t.strip()]
+    rel = media.relative_to(ROOT).as_posix()
     return {
-        "file": media.relative_to(ROOT).as_posix(),
+        "file": rel,
         "kind": "doc" if media.suffix.lower() in DOC_EXTS else "image",
         "title": meta.get("title") or title_from_filename(media.stem),
         "date": meta.get("date", ""),
         "by": meta.get("by", ""),
         "caption": meta.get("caption", ""),
         "tags": tags,
+        "source": PROV.get(rel, ""),   # the original scan this was cropped from
     }
 
 
@@ -100,7 +107,30 @@ def build_collection(folder: Path) -> dict:
     }
 
 
+def build_originals() -> list:
+    """List the full master scans so the site can offer an 'Originals' view."""
+    if not ORIGINALS.exists():
+        return []
+    out = []
+    for p in sorted(ORIGINALS.iterdir()):
+        if p.is_file() and p.suffix.lower() in MEDIA_EXTS:
+            rel = p.relative_to(ROOT).as_posix()
+            # how many cropped photos came from this scan
+            n = sum(1 for src in PROV.values() if src == rel)
+            out.append({"file": rel,
+                        "title": title_from_filename(p.stem),
+                        "crops": n})
+    return out
+
+
 def main() -> None:
+    global PROV
+    if PROVENANCE.exists():
+        try:
+            PROV = json.loads(PROVENANCE.read_text(encoding="utf-8"))
+        except (ValueError, OSError):
+            PROV = {}
+
     collections = []
     if ARCHIVE.exists():
         # Recurse: any folder that holds media (or declares itself with a
@@ -118,10 +148,13 @@ def main() -> None:
             if coll["items"] or ((folder / "_collection.txt").exists() and not has_subdirs):
                 collections.append(coll)
 
+    originals = build_originals()
     manifest = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),
         "collections": collections,
+        "originals": originals,
         "total_items": sum(len(c["items"]) for c in collections),
+        "total_originals": len(originals),
     }
     MANIFEST.write_text(json.dumps(manifest, indent=2, ensure_ascii=False) + "\n",
                         encoding="utf-8")

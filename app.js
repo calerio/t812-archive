@@ -1,112 +1,170 @@
-// T812 archive — vanilla JS, no build step. Reads manifest.json and renders.
+// T812 home/gallery + photo view with per-photo memories.
+const shelf = document.getElementById("shelf");
+const collectionEl = document.getElementById("collection");
 const gallery = document.getElementById("gallery");
-const filters = document.getElementById("filters");
 const metaEl = document.getElementById("meta");
-const lightbox = document.getElementById("lightbox");
-const lightboxMedia = document.getElementById("lightboxMedia");
-const lightboxCaption = document.getElementById("lightboxCaption");
+const lb = document.getElementById("lightbox");
+const origbox = document.getElementById("origbox");
 
-let state = { collections: [], active: "all" };
+let state = { collections: [], byId: {} };
 
 function fmtDate(d) {
   if (!d) return "";
-  // Accept YYYY, YYYY-MM, YYYY-MM-DD and render nicely.
-  const parts = d.split("-");
-  const months = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun",
-                  "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
-  if (parts.length === 1) return parts[0];
-  if (parts.length === 2) return `${months[+parts[1]] || ""} ${parts[0]}`;
-  return `${+parts[2]} ${months[+parts[1]] || ""} ${parts[0]}`;
+  const m = ["", "Jan", "Feb", "Mar", "Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"];
+  const p = d.split("-");
+  if (p.length === 1) return p[0];
+  if (p.length === 2) return `${m[+p[1]] || ""} ${p[0]}`;
+  return `${+p[2]} ${m[+p[1]] || ""} ${p[0]}`;
+}
+const tilt = (i) => `${((i % 5) - 2) * 1.1}deg`;
+
+function renderShelf() {
+  shelf.innerHTML = "";
+  state.collections.forEach((c, i) => {
+    const cover = c.items[0];
+    const a = document.createElement("a");
+    a.className = "chapter";
+    a.href = "#" + encodeURIComponent(c.id);
+    a.style.setProperty("--tilt", tilt(i));
+    a.innerHTML = `
+      ${cover ? `<img class="thumb" loading="lazy" src="${cover.file}" alt="">`
+              : `<div class="thumb"></div>`}
+      <div class="name">${c.emoji ? c.emoji + " " : ""}${c.title}</div>
+      <div class="count">${c.items.length} ${c.items.length === 1 ? "photo" : "photos"}</div>`;
+    a.addEventListener("click", (e) => { e.preventDefault(); openCollection(c.id); });
+    shelf.appendChild(a);
+  });
 }
 
-function allItems() {
-  return state.collections.flatMap((c) =>
-    c.items.map((it) => ({ ...it, _collection: c.title })));
-}
-
-function render() {
-  const items =
-    state.active === "all"
-      ? allItems()
-      : (state.collections.find((c) => c.id === state.active)?.items || [])
-          .map((it) => ({ ...it, _collection: "" }));
-
+function openCollection(id) {
+  const c = state.byId[id];
+  if (!c) return;
+  location.hash = encodeURIComponent(id);
+  shelf.hidden = true;
+  collectionEl.hidden = false;
   gallery.innerHTML = "";
-  if (!items.length) {
-    gallery.innerHTML = `<p class="empty">Nothing here yet — be the first to add a memory.
-      See <code>CONTRIBUTING.md</code>.</p>`;
+  if (!c.items.length) {
+    gallery.innerHTML = `<p class="empty">Nothing here yet.</p>`;
     return;
   }
-
-  items.forEach((it, i) => {
+  c.items.forEach((it, i) => {
     const card = document.createElement("button");
     card.className = "card";
-    card.style.setProperty("--tilt", `${((i % 5) - 2) * 1.1}deg`);
-
-    const media =
-      it.kind === "doc"
-        ? `<div class="card__media card__doc">📄</div>`
-        : `<img class="card__media" loading="lazy" src="${it.file}" alt="${it.title}">`;
-
+    card.style.setProperty("--tilt", tilt(i));
     const sub = [fmtDate(it.date), it.by].filter(Boolean).join(" · ");
-    card.innerHTML = `${media}
-      <div class="card__label">
-        <div class="card__title">${it.title}</div>
-        ${sub ? `<div class="card__sub">${sub}</div>` : ""}
-      </div>`;
-    card.addEventListener("click", () => openLightbox(it));
+    card.innerHTML = `
+      <img loading="lazy" src="${it.file}" alt="${it.title}">
+      <div class="cap">${it.title}</div>
+      ${sub ? `<div class="sub">${sub}</div>` : ""}`;
+    card.addEventListener("click", () => openPhoto(it, c));
     gallery.appendChild(card);
   });
+  window.scrollTo({ top: 0, behavior: "smooth" });
 }
 
-function openLightbox(it) {
-  lightboxMedia.innerHTML =
-    it.kind === "doc"
-      ? `<iframe src="${it.file}" title="${it.title}"></iframe>`
-      : `<img src="${it.file}" alt="${it.title}">`;
-  const meta = [fmtDate(it.date), it.by ? `by ${it.by}` : ""].filter(Boolean).join(" · ");
-  const tags = (it.tags || []).map((t) => `<span class="tag">${t}</span>`).join("");
-  lightboxCaption.innerHTML = `
-    <h2>${it.title}</h2>
-    ${meta ? `<div class="meta">${meta}</div>` : ""}
-    ${it.caption ? `<p>${it.caption}</p>` : ""}
-    ${tags ? `<div class="tags">${tags}</div>` : ""}`;
-  lightbox.hidden = false;
+function backToShelf() {
+  collectionEl.hidden = true;
+  shelf.hidden = false;
+  history.replaceState(null, "", location.pathname);
 }
-function closeLightbox() { lightbox.hidden = true; lightboxMedia.innerHTML = ""; }
 
-document.getElementById("lightboxClose").addEventListener("click", closeLightbox);
-lightbox.addEventListener("click", (e) => { if (e.target === lightbox) closeLightbox(); });
-document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeLightbox(); });
-
-function buildFilters() {
-  const tabs = [{ id: "all", title: "Everything" },
-    ...state.collections.map((c) => ({ id: c.id, title: `${c.emoji || ""} ${c.title}`.trim() }))];
-  filters.innerHTML = "";
-  tabs.forEach((t) => {
-    const b = document.createElement("button");
-    b.textContent = t.title;
-    b.setAttribute("aria-pressed", String(t.id === state.active));
-    b.addEventListener("click", () => {
-      state.active = t.id;
-      [...filters.children].forEach((c) => c.setAttribute("aria-pressed", "false"));
-      b.setAttribute("aria-pressed", "true");
-      render();
+// ---- photo lightbox ----
+let current = null;
+async function openPhoto(it, coll) {
+  current = { it, coll };
+  document.getElementById("lbMedia").innerHTML = `<img src="${it.file}" alt="${it.title}">`;
+  document.getElementById("lbTitle").textContent = it.title;
+  const meta = [fmtDate(it.date), it.by ? "by " + it.by : ""].filter(Boolean).join(" · ");
+  document.getElementById("lbMeta").textContent = meta;
+  const orig = document.getElementById("lbOrig");
+  orig.innerHTML = it.source
+    ? `<a href="#" id="viewOrig">🔍 view the original scan</a>`
+    : "";
+  if (it.source) {
+    document.getElementById("viewOrig").addEventListener("click", (e) => {
+      e.preventDefault(); openOriginal(it.source);
     });
-    filters.appendChild(b);
-  });
+  }
+  lb.hidden = false;
+  loadNotes(it);
 }
+
+async function loadNotes(it) {
+  const box = document.getElementById("lbNotes");
+  if (!window.Supa || !Supa.configured()) {
+    box.innerHTML = `<p class="formnote">The memory wall isn't connected yet.</p>`;
+    return;
+  }
+  box.innerHTML = `<p class="formnote">loading…</p>`;
+  try {
+    const notes = await Supa.getMemories({ photo: it.file });
+    box.innerHTML = notes.length ? "" : `<p class="formnote">Be the first to leave a memory.</p>`;
+    notes.forEach((n) => box.appendChild(noteEl(n)));
+  } catch {
+    box.innerHTML = `<p class="formnote">Couldn't load memories.</p>`;
+  }
+}
+
+function noteEl(n) {
+  const d = document.createElement("div");
+  d.className = "note";
+  const when = n.created_at ? new Date(n.created_at).toLocaleDateString() : "";
+  d.innerHTML = `<span class="when">${when}</span>
+    <div class="msg">${escapeHtml(n.message)}</div>
+    <div class="who">— ${escapeHtml(n.name || "anonymous")}</div>`;
+  return d;
+}
+
+function escapeHtml(s) {
+  return (s || "").replace(/[&<>"']/g, (c) =>
+    ({ "&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;" }[c]));
+}
+
+document.getElementById("lbForm").addEventListener("submit", async (e) => {
+  e.preventDefault();
+  const f = e.target, note = document.getElementById("lbFormNote");
+  if (f.website.value) return;                 // honeypot tripped
+  if (!Supa.configured()) { note.textContent = "Wall not connected yet."; return; }
+  note.textContent = "pinning…";
+  try {
+    await Supa.postMemory({
+      name: f.name.value, message: f.message.value,
+      photo: current.it.file, chapter: current.coll.title,
+    });
+    f.reset();
+    note.textContent = "Thank you! Your memory will appear once approved. 💛";
+  } catch {
+    note.textContent = "Hmm, that didn't send. Try again?";
+  }
+});
+
+function openOriginal(src) { document.getElementById("origImg").src = src; origbox.hidden = false; }
+function closeLb() { lb.hidden = true; document.getElementById("lbMedia").innerHTML = ""; }
+function closeOrig() { origbox.hidden = true; document.getElementById("origImg").src = ""; }
+
+document.getElementById("lightboxClose").addEventListener("click", closeLb);
+lb.addEventListener("click", (e) => { if (e.target === lb) closeLb(); });
+document.getElementById("origClose").addEventListener("click", closeOrig);
+origbox.addEventListener("click", (e) => { if (e.target === origbox) closeOrig(); });
+document.getElementById("backToShelf").addEventListener("click", backToShelf);
+document.addEventListener("keydown", (e) => {
+  if (e.key !== "Escape") return;
+  if (!origbox.hidden) closeOrig();
+  else if (!lb.hidden) closeLb();
+});
 
 fetch("manifest.json")
-  .then((r) => { if (!r.ok) throw new Error(r.status); return r.json(); })
-  .then((data) => {
-    state.collections = data.collections || [];
-    metaEl.textContent = `${data.total_items || 0} memories archived.`;
-    buildFilters();
-    render();
+  .then((r) => r.json())
+  .then((d) => {
+    state.collections = d.collections.filter((c) => c.items.length);
+    state.collections.forEach((c) => (state.byId[c.id] = c));
+    metaEl.textContent = `${d.total_items} memories archived.`;
+    renderShelf();
+    const hash = decodeURIComponent(location.hash.slice(1));
+    if (hash && state.byId[hash]) openCollection(hash);
   })
   .catch(() => {
-    gallery.innerHTML = `<p class="empty">Couldn't load <code>manifest.json</code>.
-      Run <code>python3 scripts/build_manifest.py</code>, then serve the folder over http
-      (<code>python3 -m http.server</code>) rather than opening the file directly.</p>`;
+    shelf.innerHTML = `<p class="empty">Couldn't load <code>manifest.json</code>.
+      Run <code>python3 scripts/build_manifest.py</code> and serve over http
+      (<code>python3 -m http.server</code>).</p>`;
   });

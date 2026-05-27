@@ -19,7 +19,10 @@ t812-archive/
 ├── index.html            ← the gallery site
 ├── style.css / app.js
 ├── manifest.json         ← generated index of everything (don't hand-edit)
-└── scripts/build_manifest.py  ← regenerates manifest.json from archive/
+├── assets/               ← helpers (e.g. printable black scanning backing sheet)
+└── scripts/
+    ├── build_manifest.py ← regenerates manifest.json from archive/ (stdlib only)
+    └── split_scan.py     ← cuts one scanned A4 of Polaroids into separate photos
 ```
 
 Each subfolder of `archive/` is a **collection**; each image/PDF in it is an

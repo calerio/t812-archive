@@ -1,0 +1,4 @@
+# Only needed to run scripts/split_scan.py (the Polaroid auto-cropper).
+# The gallery site and build_manifest.py need nothing beyond the Python stdlib.
+opencv-python-headless>=4.8
+numpy>=1.24

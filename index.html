@@ -1,0 +1,36 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>T812 · The Flat Archive</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <header class="masthead">
+    <h1>T812</h1>
+    <p class="tagline">a living archive of the flat &mdash; polaroids, letters &amp; everything in between</p>
+  </header>
+
+  <nav class="filters" id="filters" aria-label="Collections"></nav>
+
+  <main id="gallery" class="gallery">
+    <p class="loading">Loading the archive&hellip;</p>
+  </main>
+
+  <footer class="footer">
+    <p>Add your own memory &mdash; see <code>CONTRIBUTING.md</code>. <span id="meta"></span></p>
+  </footer>
+
+  <!-- Lightbox -->
+  <div class="lightbox" id="lightbox" hidden>
+    <button class="lightbox__close" id="lightboxClose" aria-label="Close">&times;</button>
+    <figure class="lightbox__inner">
+      <div class="lightbox__media" id="lightboxMedia"></div>
+      <figcaption class="lightbox__caption" id="lightboxCaption"></figcaption>
+    </figure>
+  </div>
+
+  <script src="app.js"></script>
+</body>
+</html>

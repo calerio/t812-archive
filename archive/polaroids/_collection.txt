@@ -1,0 +1,3 @@
+title: The Polaroid Wall
+emoji: 📸
+description: Every Polaroid pinned to the flat wall, scanned and kept forever.

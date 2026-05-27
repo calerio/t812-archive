@@ -1,0 +1,33 @@
+{
+  "generated": "2026-05-27T10:50:49+00:00",
+  "collections": [
+    {
+      "id": "letters",
+      "title": "Letters to the Flat",
+      "description": "Letters, notes and cards written for the flat — scanned and preserved.",
+      "emoji": "✉️",
+      "items": []
+    },
+    {
+      "id": "polaroids",
+      "title": "The Polaroid Wall",
+      "description": "Every Polaroid pinned to the flat wall, scanned and kept forever.",
+      "emoji": "📸",
+      "items": [
+        {
+          "file": "archive/polaroids/welcome-to-the-archive.svg",
+          "kind": "image",
+          "title": "Welcome to the archive",
+          "date": "2026-05-27",
+          "by": "The Flat",
+          "caption": "This is a placeholder so the gallery has something to show. Delete it once you've scanned your first real Polaroid.",
+          "tags": [
+            "sample",
+            "getting-started"
+          ]
+        }
+      ]
+    }
+  ],
+  "total_items": 1
+}

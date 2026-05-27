@@ -1,0 +1,5 @@
+title: Welcome to the archive
+date: 2026-05-27
+by: The Flat
+caption: This is a placeholder so the gallery has something to show. Delete it once you've scanned your first real Polaroid.
+tags: sample, getting-started

@@ -66,14 +66,16 @@
     }).catch(() => {});
   }
 
-  // Coarse geo from a free, keyless, CORS-friendly lookup. We never store the IP,
-  // and no-referrer keeps the unlisted site URL out of the lookup's logs.
-  fetch("https://ipwho.is/?fields=success,country,country_code,region,city,latitude,longitude",
-        { referrerPolicy: "no-referrer" })
+  // Coarse geo from GeoJS — free, keyless, browser-CORS-friendly. The lookup's
+  // response includes our IP but we never store it; no-referrer also keeps the
+  // unlisted site URL out of GeoJS's logs.
+  const num = (v) => { const n = parseFloat(v); return Number.isFinite(n) ? n : null; };
+  fetch("https://get.geojs.io/v1/ip/geo.json", { referrerPolicy: "no-referrer" })
     .then((r) => r.json())
-    .then((g) => send(g && g.success ? {
+    .then((g) => send(g && (g.country || g.latitude) ? {
       country: g.country, country_code: g.country_code,
-      region: g.region, city: g.city, lat: g.latitude, lon: g.longitude,
+      region: g.region, city: g.city,
+      lat: num(g.latitude), lon: num(g.longitude),
     } : {}))
     .catch(() => send({}));   // still log the visit, just without geo
 })();

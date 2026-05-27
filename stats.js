@@ -27,6 +27,26 @@
   };
   const pageLabel = (p) => PAGE_LABELS[p] || (p || "").replace(/\.html$/, "") || "Gallery";
 
+  // Turn a raw referrer URL into a friendly source name.
+  const SOURCES = {
+    "instagram.com": "Instagram", "t.instagram.com": "Instagram", "l.instagram.com": "Instagram",
+    "t.co": "X (Twitter)", "twitter.com": "X (Twitter)", "x.com": "X (Twitter)",
+    "facebook.com": "Facebook", "l.facebook.com": "Facebook", "m.facebook.com": "Facebook",
+    "wa.me": "WhatsApp", "api.whatsapp.com": "WhatsApp", "chat.whatsapp.com": "WhatsApp",
+    "t.me": "Telegram", "out.reddit.com": "Reddit", "reddit.com": "Reddit",
+    "youtube.com": "YouTube", "linkedin.com": "LinkedIn", "google.com": "Google",
+    "calerio.github.io": "On-site",
+  };
+  function srcLabel(raw) {
+    if (!raw || raw === "(direct)") return "Direct";
+    let host = raw;
+    try { host = new URL(raw).hostname; } catch {}
+    host = host.replace(/^www\./, "");
+    if (SOURCES[host]) return SOURCES[host];
+    const base = host.split(".").slice(-2).join(".");
+    return SOURCES[base] || host || "Direct";
+  }
+
   async function rpc(fn) {
     const r = await fetch(`${URL}/rest/v1/rpc/${fn}`, {
       method: "POST",
@@ -73,19 +93,31 @@
       el.innerHTML = `<p class="formnote">No visits yet — this chart fills in day by day.</p>`;
       return;
     }
-    const hi = Math.max(1, ...rows.map((r) => +r.visits || 0));
-    el.innerHTML = rows.map((r) => {
-      const v = +r.visits || 0;
-      const lbl = new Date(r.day).toLocaleDateString(undefined, { day: "numeric", month: "short" });
+    // fill every day from the first visit to today so it reads as a real axis
+    const byDay = {};
+    rows.forEach((r) => { byDay[r.day] = +r.visits || 0; });
+    const days = [];
+    const d = new Date(rows[0].day + "T00:00:00Z");
+    const end = new Date();
+    for (; d <= end; d.setUTCDate(d.getUTCDate() + 1)) {
+      const key = d.toISOString().slice(0, 10);
+      days.push({ day: key, visits: byDay[key] || 0 });
+    }
+    const show = days.slice(-21);                 // last 3 weeks
+    const hi = Math.max(1, ...show.map((x) => x.visits));
+    el.innerHTML = show.map((x) => {
+      const v = x.visits;
+      const lbl = new Date(x.day + "T00:00:00Z")
+        .toLocaleDateString(undefined, { day: "numeric", month: "short" });
       return `<div class="bar1">
-        <b>${v}</b>
-        <div class="barcol"><span style="height:${Math.max(6, Math.round(v / hi * 100))}%"></span></div>
+        <b>${v || ""}</b>
+        <div class="barcol"><span style="height:${v ? Math.max(8, Math.round(v / hi * 100)) : 0}%"></span></div>
         <i>${lbl}</i>
       </div>`;
     }).join("");
   }
 
-  async function drawMap(geo) {
+  async function drawMap(geo, countries) {
     const holder = document.getElementById("map");
     let svgText;
     try {
@@ -97,47 +129,50 @@
     holder.innerHTML = svgText;
     const svg = holder.querySelector("svg");
     if (!svg) return;
-    const NS = "http://www.w3.org/2000/svg";
-    const pins = document.createElementNS(NS, "g");
-    pins.setAttribute("class", "pins");
     const tip = document.getElementById("maptip");
-    const hi = Math.max(1, ...geo.map((g) => +g.visits || 0));
-    geo.filter((g) => g.lat != null && g.lon != null)
-       .sort((a, b) => (+b.visits) - (+a.visits))
-       .forEach((g) => {
-      const cx = projX(+g.lon), cy = projY(+g.lat);
-      const v = +g.visits || 0;
-      const r = 2.2 + Math.sqrt(v / hi) * 3.6;   // gentle range ~2–6 viewBox units
-      const where = [g.city, g.country].filter(Boolean).join(", ") || "Somewhere";
-      const label = `${where} · ${v} visit${v === 1 ? "" : "s"}`;
-      const halo = document.createElementNS(NS, "circle");
-      halo.setAttribute("class", "pin-halo");
-      halo.setAttribute("cx", cx); halo.setAttribute("cy", cy); halo.setAttribute("r", r + 3);
-      const dot = document.createElementNS(NS, "circle");
-      dot.setAttribute("class", "pin");
-      dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); dot.setAttribute("r", r);
-      dot.setAttribute("tabindex", "0");
-      dot.setAttribute("aria-label", label);
-      // smooth, custom tooltip (native SVG <title> is laggy)
-      const show = (e) => {
-        tip.textContent = label; tip.hidden = false;
-        const x = (e.touches ? e.touches[0].clientX : e.clientX);
-        const y = (e.touches ? e.touches[0].clientY : e.clientY);
-        tip.style.left = x + "px"; tip.style.top = (y - 14) + "px";
-      };
-      const hide = () => { tip.hidden = true; };
-      dot.addEventListener("mouseenter", show);
-      dot.addEventListener("mousemove", show);
-      dot.addEventListener("mouseleave", hide);
-      dot.addEventListener("focus", show);
-      dot.addEventListener("blur", hide);
-      pins.appendChild(halo); pins.appendChild(dot);
+
+    // group cities under their country code
+    const byCC = {};
+    geo.forEach((g) => {
+      const cc = (g.country_code || "").toUpperCase();
+      if (!cc) return;
+      (byCC[cc] = byCC[cc] || { country: g.country, cities: [] })
+        .cities.push({ city: g.city, visits: +g.visits || 0 });
     });
-    svg.appendChild(pins);
-    const places = geo.length;
-    document.getElementById("mapcap").textContent =
-      places ? `${places} place${places === 1 ? "" : "s"} on the map — hover a pin for the count.`
-             : "No locations yet — pins will appear as people visit.";
+    // authoritative per-country totals
+    const totalByCC = {};
+    countries.forEach((c) => { totalByCC[(c.country_code || "").toUpperCase()] = +c.visits || 0; });
+    const maxTotal = Math.max(1, ...Object.values(totalByCC));
+
+    let lit = 0;
+    svg.querySelectorAll(".country").forEach((path) => {
+      const cc = (path.getAttribute("data-cc") || "").toUpperCase();
+      const total = totalByCC[cc] ||
+        (byCC[cc] ? byCC[cc].cities.reduce((s, x) => s + x.visits, 0) : 0);
+      if (total <= 0) return;
+      lit++;
+      const t = (0.32 + 0.6 * Math.sqrt(total / maxTotal)).toFixed(2);  // shade by volume
+      path.style.fill = `rgba(192,96,63,${t})`;
+      path.classList.add("lit");
+      const name = (byCC[cc] && byCC[cc].country) || path.getAttribute("data-name") || cc;
+      const cities = (byCC[cc] ? byCC[cc].cities : [])
+        .filter((c) => c.city).sort((a, b) => b.visits - a.visits);
+      const body = cities.length
+        ? cities.map((c) => `<span class="tipcity">${esc(c.city)}<b>${c.visits}</b></span>`).join("")
+        : `<span class="tipcity">${total} visit${total === 1 ? "" : "s"}</span>`;
+      const html = `<span class="tiphead">${esc(name)}</span>${body}`;
+      const place = (e) => {
+        tip.style.left = e.clientX + "px";
+        tip.style.top = (e.clientY - 14) + "px";
+      };
+      path.addEventListener("mouseenter", (e) => { tip.innerHTML = html; tip.hidden = false; place(e); });
+      path.addEventListener("mousemove", place);
+      path.addEventListener("mouseleave", () => { tip.hidden = true; });
+    });
+
+    document.getElementById("mapcap").textContent = lit
+      ? `${lit} countr${lit === 1 ? "y" : "ies"} so far — hover one for its cities.`
+      : "No locations yet — countries light up as people visit.";
   }
 
   // ---- load everything ----
@@ -152,10 +187,19 @@
   ]).then(([summary, geo, countries, pages, referrers, browsers, devices, daily]) => {
     const s = summary[0] || { total: 0, visitors: 0, countries: 0, cities: 0 };
     bignums(s);
-    drawMap(geo);
+    drawMap(geo, countries);
     list("countries", countries, (r) => `${flag(r.country_code)} ${esc(r.country)}`);
     list("pages", pages, (r) => esc(pageLabel(r.path)));
-    list("referrers", referrers, (r) => esc(r.referrer));
+    // merge referrer variants (t./l.instagram.com → Instagram) into named sources
+    const refAgg = {};
+    referrers.forEach((r) => {
+      const k = srcLabel(r.referrer);
+      refAgg[k] = (refAgg[k] || 0) + (+r.visits || 0);
+    });
+    const refRows = Object.entries(refAgg)
+      .map(([referrer, visits]) => ({ referrer, visits }))
+      .sort((a, b) => b.visits - a.visits);
+    list("referrers", refRows, (r) => esc(r.referrer));
     // devices summary line + browser bars share the one panel
     const devLine = devices.map((d) => `${esc(d.device)} ${d.visits}`).join(" · ");
     document.getElementById("devices").innerHTML =

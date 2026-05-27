@@ -199,18 +199,27 @@ a { color: var(--accent); }
 .mapholder { width: 100%; }
 .mapholder svg.worldmap { width: 100%; height: auto; display: block; }
 .mapcap { font-family: var(--hand); color: var(--muted); text-align: center; margin: .6rem 0 0; font-size: 1.05rem; }
-.pin { fill: var(--accent); fill-opacity: .9; stroke: #fff; stroke-width: .8; vector-effect: non-scaling-stroke; cursor: pointer; transition: fill-opacity .12s; }
-.pin:hover, .pin:focus { fill-opacity: 1; outline: none; }
-.pin-halo { fill: var(--accent); fill-opacity: .14; pointer-events: none; }
+/* choropleth: visited countries are filled (inline by JS); others stay land-toned */
+.worldmap .country { transition: fill .15s, filter .15s; }
+.worldmap .country.lit { cursor: pointer; }
+.worldmap .country.lit:hover { filter: brightness(1.12) saturate(1.1); }
 
-/* smooth custom map tooltip */
+/* sticky-note map tooltip listing a country's cities */
 .maptip {
-  position: fixed; z-index: 50; transform: translate(-50%, -100%);
-  background: var(--ink); color: #f6f0e3; font-size: .8rem; font-family: var(--serif);
-  padding: .3rem .55rem; border-radius: 5px; pointer-events: none; white-space: nowrap;
-  box-shadow: 0 6px 16px rgba(0,0,0,.25);
+  position: fixed; z-index: 50; transform: translate(-50%, -100%) rotate(-1.5deg);
+  background: #fff8d8; color: var(--ink); font-family: var(--serif);
+  padding: .5rem .7rem .55rem; border-radius: 2px; pointer-events: none;
+  min-width: 110px; max-width: 220px;
+  box-shadow: 0 8px 20px rgba(44,38,32,.28); border: 1px solid rgba(44,38,32,.06);
+}
+.maptip::before {  /* a little tape strip */
+  content: ""; position: absolute; top: -7px; left: 50%; width: 46px; height: 14px;
+  transform: translateX(-50%) rotate(-3deg); background: var(--tape);
 }
 .maptip[hidden] { display: none; }
+.maptip .tiphead { display: block; font-family: var(--hand); font-size: 1.15rem; color: var(--accent); margin-bottom: .25rem; }
+.maptip .tipcity { display: flex; justify-content: space-between; gap: 1rem; font-size: .82rem; line-height: 1.5; }
+.maptip .tipcity b { font-weight: 700; color: var(--muted); font-variant-numeric: tabular-nums; }
 
 .statgrid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 1.2rem; margin-bottom: 1.2rem; }
 @media (max-width: 720px) { .statgrid { grid-template-columns: 1fr; } }
@@ -226,7 +235,7 @@ a { color: var(--accent); }
 .statlist .empty { color: var(--muted); }
 
 .timeline { margin-bottom: 1.2rem; }
-.bars { display: flex; align-items: flex-end; gap: 10px; padding: .4rem .2rem 0; overflow-x: auto; }
+.bars { display: flex; align-items: flex-end; gap: 10px; padding: .4rem .2rem 0; overflow-x: auto; border-bottom: 1px solid rgba(44,38,32,.15); }
 .bar1 { flex: 0 0 38px; display: flex; flex-direction: column; align-items: center; }
 .bar1 b { font-weight: 400; font-size: .72rem; color: var(--muted); margin-bottom: 3px; font-variant-numeric: tabular-nums; }
 .bar1 .barcol { height: 90px; width: 100%; display: flex; align-items: flex-end; justify-content: center; }

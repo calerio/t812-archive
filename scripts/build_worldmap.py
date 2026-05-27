@@ -41,6 +41,10 @@ def feature_path(geom):
     return "".join(ring_to_path(ring) for poly in polys for ring in poly)
 
 
+def attr_esc(s):
+    return (s or "").replace("&", "&amp;").replace('"', "&quot;").replace("<", "&lt;")
+
+
 def main():
     print("downloading Natural Earth 110m borders…")
     with urllib.request.urlopen(SRC, timeout=60) as r:
@@ -52,12 +56,22 @@ def main():
         if not geom:
             continue
         d = feature_path(geom)
-        if d:
-            paths.append(d)
+        if not d:
+            continue
+        p = feat.get("properties", {})
+        # ISO_A2_EH fixes France/Norway etc. that are "-99" in plain ISO_A2
+        cc = p.get("ISO_A2_EH") or p.get("ISO_A2") or ""
+        if cc in ("-99", "", None):
+            cc = p.get("ISO_A2") or ""
+        name = p.get("ADMIN") or p.get("NAME") or p.get("NAME_LONG") or ""
+        paths.append((cc, name, d))
 
-    body = "\n".join(f'    <path d="{d}"/>' for d in paths)
+    body = "\n".join(
+        f'    <path class="country" data-cc="{attr_esc(cc)}" '
+        f'data-name="{attr_esc(name)}" d="{d}"/>'
+        for cc, name, d in paths)
     svg = f"""<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 {W:.0f} {H:.0f}"
-     class="worldmap" role="img" aria-label="World map">
+     class="worldmap" role="img" aria-label="World map of visits">
   <g class="land" fill="#e0d4bb" stroke="#b9a986" stroke-width="0.6"
      stroke-linejoin="round" vector-effect="non-scaling-stroke">
 {body}

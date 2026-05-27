@@ -109,8 +109,17 @@ def detect_photos(img, bg, min_area_frac, debug_path=None):
         bg = "dark" if np.median(gray) < 110 else "light"
 
     # Foreground (the photos) should end up white in `mask`.
-    flag = cv2.THRESH_BINARY if bg == "dark" else cv2.THRESH_BINARY_INV
-    _, mask = cv2.threshold(gray, 0, 255, flag | cv2.THRESH_OTSU)
+    if bg == "dark":
+        # Photos are brighter than a dark/black backing — Otsu separates cleanly.
+        _, mask = cv2.threshold(gray, 0, 255, cv2.THRESH_BINARY | cv2.THRESH_OTSU)
+    else:
+        # Light/white backing: Otsu tends to crop into the photos and lose any
+        # white-bordered ones. Instead, treat as foreground anything darker than
+        # the page white (measured, not hard-coded) OR clearly colourful. Morphology
+        # then fills white borders back in.
+        page_white = np.percentile(gray, 97)
+        sat = cv2.cvtColor(img, cv2.COLOR_BGR2HSV)[:, :, 1]
+        mask = (((gray < page_white - 15) | (sat > 30)).astype("uint8")) * 255
 
     # Close small gaps (e.g. a dark photo on dark bg) and detach touching edges.
     k = cv2.getStructuringElement(cv2.MORPH_ELLIPSE, (15, 15))

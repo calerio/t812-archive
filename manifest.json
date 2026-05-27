@@ -1,6 +1,158 @@
 {
-  "generated": "2026-05-27T11:43:46+00:00",
+  "generated": "2026-05-27T12:19:16+00:00",
   "collections": [
+    {
+      "id": "cards",
+      "title": "Trading Cards",
+      "description": "Pokémon, Yu-Gi-Oh and other trading cards from around the flat, scanned and kept.",
+      "emoji": "🃏",
+      "items": [
+        {
+          "file": "archive/cards/pokemon-cards-01.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-02.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-03.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-04.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-05.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-06.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-07.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-08.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 08",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-09.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 09",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-10.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 10",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-11.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 11",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-12.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 12",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-13.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 13",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-14.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 14",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-15.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 15",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/cards/pokemon-cards-16.jpg",
+          "kind": "image",
+          "title": "Pokemon Cards 16",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        }
+      ]
+    },
     {
       "id": "letters",
       "title": "Letters to the Flat",
@@ -377,5 +529,5 @@
       ]
     }
   ],
-  "total_items": 40
+  "total_items": 56
 }

@@ -1,0 +1,3 @@
+title: Trading Cards
+emoji: 🃏
+description: Pokémon, Yu-Gi-Oh and other trading cards from around the flat, scanned and kept.

@@ -3,3 +3,7 @@ Thumbs.db
 *.tmp
 .venv/
 __pycache__/
+
+# NEVER commit the Supabase secret/service_role key
+.supabase-service-key
+

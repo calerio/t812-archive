@@ -86,6 +86,8 @@ def main() -> None:
     collections = []
     if ARCHIVE.exists():
         for folder in sorted(p for p in ARCHIVE.iterdir() if p.is_dir()):
+            if folder.name.startswith((".", "_")):   # utility/hidden folders
+                continue
             collections.append(build_collection(folder))
 
     manifest = {

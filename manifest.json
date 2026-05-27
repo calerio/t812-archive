@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-27T10:50:49+00:00",
+  "generated": "2026-05-27T11:43:46+00:00",
   "collections": [
     {
       "id": "letters",
@@ -15,19 +15,367 @@
       "emoji": "📸",
       "items": [
         {
-          "file": "archive/polaroids/welcome-to-the-archive.svg",
+          "file": "archive/polaroids/bengladino-1-01.jpg",
           "kind": "image",
-          "title": "Welcome to the archive",
-          "date": "2026-05-27",
-          "by": "The Flat",
-          "caption": "This is a placeholder so the gallery has something to show. Delete it once you've scanned your first real Polaroid.",
-          "tags": [
-            "sample",
-            "getting-started"
-          ]
+          "title": "Bengladino 1 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-02.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-03.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-04.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-05.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-06.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-07.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-1-08.jpg",
+          "kind": "image",
+          "title": "Bengladino 1 08",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-01.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-02.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-03.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-04.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-05.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-06.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-07.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-2-08.jpg",
+          "kind": "image",
+          "title": "Bengladino 2 08",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/bengladino-3-01.jpg",
+          "kind": "image",
+          "title": "Bengladino 3 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-01.jpg",
+          "kind": "image",
+          "title": "Family 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-02.jpg",
+          "kind": "image",
+          "title": "Family 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-03.jpg",
+          "kind": "image",
+          "title": "Family 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-04.jpg",
+          "kind": "image",
+          "title": "Family 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-05.jpg",
+          "kind": "image",
+          "title": "Family 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-06.jpg",
+          "kind": "image",
+          "title": "Family 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/family-07.jpg",
+          "kind": "image",
+          "title": "Family 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-01.jpg",
+          "kind": "image",
+          "title": "Roommates 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-02.jpg",
+          "kind": "image",
+          "title": "Roommates 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-03.jpg",
+          "kind": "image",
+          "title": "Roommates 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-04.jpg",
+          "kind": "image",
+          "title": "Roommates 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-05.jpg",
+          "kind": "image",
+          "title": "Roommates 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-06.jpg",
+          "kind": "image",
+          "title": "Roommates 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-07.jpg",
+          "kind": "image",
+          "title": "Roommates 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/roommates-08.jpg",
+          "kind": "image",
+          "title": "Roommates 08",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-01.jpg",
+          "kind": "image",
+          "title": "Staff 01",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-02.jpg",
+          "kind": "image",
+          "title": "Staff 02",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-03.jpg",
+          "kind": "image",
+          "title": "Staff 03",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-04.jpg",
+          "kind": "image",
+          "title": "Staff 04",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-05.jpg",
+          "kind": "image",
+          "title": "Staff 05",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-06.jpg",
+          "kind": "image",
+          "title": "Staff 06",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-07.jpg",
+          "kind": "image",
+          "title": "Staff 07",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
+        },
+        {
+          "file": "archive/polaroids/staff-08.jpg",
+          "kind": "image",
+          "title": "Staff 08",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": []
         }
       ]
     }
   ],
-  "total_items": 1
+  "total_items": 40
 }

@@ -46,6 +46,46 @@ def order_corners(pts: "np.ndarray") -> "np.ndarray":
     ], dtype="float32")
 
 
+def auto_orient(crop: "np.ndarray") -> "np.ndarray":
+    """Rotate a Polaroid crop so its thick white border sits at the bottom.
+
+    A Polaroid always has one wide white margin (the bottom). We measure how many
+    full-width / full-height bands of (near-)white pixels sit against each of the
+    four edges; the thickest band is the bottom, and we rotate to put it there.
+    Only does 90-degree turns, so it can't make things worse than a clean rotation.
+    """
+    gray = cv2.cvtColor(crop, cv2.COLOR_BGR2GRAY)
+    white = gray > 200
+    h, w = white.shape
+
+    def band(axis_white, n):
+        # count leading lines (rows or cols) that are mostly white across the middle
+        run = 0
+        for i in range(n):
+            line = axis_white[i]
+            mid = line[int(len(line) * 0.2):int(len(line) * 0.8)]
+            if mid.mean() > 0.9:
+                run += 1
+            else:
+                break
+        return run
+
+    top = band(white, h)
+    bottom = band(white[::-1], h)
+    left = band(white.T, w)
+    right = band(white.T[::-1], w)
+
+    thickest = max(("bottom", bottom), ("top", top), ("left", left),
+                   ("right", right), key=lambda kv: kv[1])[0]
+    if thickest == "top":
+        return cv2.rotate(crop, cv2.ROTATE_180)
+    if thickest == "left":
+        return cv2.rotate(crop, cv2.ROTATE_90_COUNTERCLOCKWISE)
+    if thickest == "right":
+        return cv2.rotate(crop, cv2.ROTATE_90_CLOCKWISE)
+    return crop  # already bottom
+
+
 def deskew_crop(img: "np.ndarray", box: "np.ndarray") -> "np.ndarray":
     """Perspective-warp the rotated box to an upright rectangle."""
     src = order_corners(box.astype("float32"))
@@ -127,7 +167,7 @@ def read_pages(path: Path):
 
 
 def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
-                 pad: int, debug_path, quality: int) -> int:
+                 pad: int, orient: bool, debug_path, quality: int) -> int:
     boxes = detect_photos(img, bg, min_area_frac, debug_path)
     if not boxes:
         print(f"  no photos detected (try --bg light, or lower --min-area)")
@@ -138,6 +178,8 @@ def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
         crop = deskew_crop(img, box)
         if crop is None:
             continue
+        if orient:
+            crop = auto_orient(crop)
         if pad:
             crop = crop[pad:-pad or None, pad:-pad or None]
             if crop.size == 0:
@@ -151,7 +193,8 @@ def process_page(img, out_dir: Path, pfx: str, bg: str, min_area_frac: float,
 
 
 def process(path: Path, out_dir: Path, prefix: str | None, bg: str,
-            min_area_frac: float, pad: int, debug: bool, quality: int) -> int:
+            min_area_frac: float, pad: int, orient: bool, debug: bool,
+            quality: int) -> int:
     pages = read_pages(path)
     if not pages:
         print(f"!! could not read {path}", file=sys.stderr)
@@ -167,7 +210,7 @@ def process(path: Path, out_dir: Path, prefix: str | None, bg: str,
         pfx = f"{base}-p{n}" if multi else base
         debug_path = (out_dir / f"{pfx}-debug.jpg") if debug else None
         saved += process_page(img, out_dir, pfx, bg, min_area_frac, pad,
-                              debug_path, quality)
+                              orient, debug_path, quality)
     return saved
 
 
@@ -185,6 +228,9 @@ def main() -> None:
                     help="ignore blobs smaller than this fraction of the page (default 0.02)")
     ap.add_argument("--pad", type=int, default=0,
                     help="pixels to trim off each edge after cropping (default 0)")
+    ap.add_argument("--orient", action="store_true",
+                    help="try to auto-rotate so the thick Polaroid border is at the "
+                         "bottom (unreliable for landscape-shot Polaroids; off by default)")
     ap.add_argument("--quality", type=int, default=95, help="JPEG quality (default 95)")
     ap.add_argument("--debug", action="store_true",
                     help="also write a *-debug.jpg showing what was detected")
@@ -195,8 +241,8 @@ def main() -> None:
     for s in args.scans:
         p = Path(s).expanduser()
         print(f"{p.name}:")
-        total += process(p, out_dir, args.prefix, args.bg,
-                         args.min_area, args.pad, args.debug, args.quality)
+        total += process(p, out_dir, args.prefix, args.bg, args.min_area,
+                         args.pad, args.orient, args.debug, args.quality)
 
     print(f"\nDone — {total} photo(s) written to {out_dir}.")
     if total:

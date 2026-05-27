@@ -18,3 +18,6 @@ excluded/
 poster.html
 poster.pdf
 poster-preview.png
+
+# Throwaway local render previews
+*-preview.png

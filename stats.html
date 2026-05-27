@@ -1,0 +1,57 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="robots" content="noindex, nofollow" />
+  <title>T812 · Stats</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+<body>
+  <nav class="site-nav">
+    <a class="brand" href="index.html">T812</a>
+    <a class="navlink" href="index.html">Gallery</a>
+    <a class="navlink" href="wall.html">Memory Wall</a>
+    <a class="navlink" href="originals.html">Originals</a>
+    <a class="navlink active" href="stats.html">Stats</a>
+  </nav>
+
+  <header class="hero">
+    <h1>Stats</h1>
+    <p class="tagline">who's been wandering through the flat</p>
+  </header>
+
+  <section class="statwrap">
+    <!-- headline numbers -->
+    <div id="bignums" class="bignums"></div>
+
+    <!-- world map of visits -->
+    <figure class="mapcard">
+      <div id="map" class="mapholder"><p class="formnote">loading the map…</p></div>
+      <figcaption id="mapcap" class="mapcap"></figcaption>
+    </figure>
+
+    <!-- breakdown lists -->
+    <div class="statgrid">
+      <div class="statpanel"><h3>🌍 Top countries</h3><ol id="countries" class="statlist"></ol></div>
+      <div class="statpanel"><h3>📄 Top pages</h3><ol id="pages" class="statlist"></ol></div>
+      <div class="statpanel"><h3>↪️ Came from</h3><ol id="referrers" class="statlist"></ol></div>
+      <div class="statpanel"><h3>💻 Devices &amp; browsers</h3><ol id="devices" class="statlist"></ol></div>
+    </div>
+
+    <!-- visits over time -->
+    <div class="statpanel timeline">
+      <h3>📈 Visits over time</h3>
+      <div id="timeline" class="bars"></div>
+    </div>
+
+    <p id="statnote" class="formnote statfoot"></p>
+  </section>
+
+  <footer class="footer"><p>Aggregate counts only — no personal data, no IP addresses. <span id="meta"></span></p></footer>
+
+  <script src="config.js"></script>
+  <script src="stats.js"></script>
+  <script src="js/track.js"></script>
+</body>
+</html>

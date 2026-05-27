@@ -13,3 +13,8 @@ __pycache__/
 
 # Kept locally but excluded from the public repo + the site (trading cards, bengladino)
 excluded/
+
+# Generated print artifacts (run scripts/make_poster.py to regenerate; needs `pip install segno`)
+poster.html
+poster.pdf
+poster-preview.png

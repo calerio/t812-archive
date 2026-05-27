@@ -3,7 +3,7 @@
 // No raw rows or personal data ever reach the browser.
 (function () {
   const cfg = window.T812_CONFIG || {};
-  const URL = (cfg.SUPABASE_URL || "").replace(/\/$/, "");
+  const API = (cfg.SUPABASE_URL || "").replace(/\/$/, "");   // not "URL" — that shadows the global URL constructor
   const KEY = cfg.SUPABASE_ANON_KEY || "";
   const note = document.getElementById("statnote");
 
@@ -48,7 +48,7 @@
   }
 
   async function rpc(fn) {
-    const r = await fetch(`${URL}/rest/v1/rpc/${fn}`, {
+    const r = await fetch(`${API}/rest/v1/rpc/${fn}`, {
       method: "POST",
       headers: { apikey: KEY, Authorization: "Bearer " + KEY,
                  "Content-Type": "application/json" },
@@ -176,7 +176,7 @@
   }
 
   // ---- load everything ----
-  if (!URL || !KEY) {
+  if (!API || !KEY) {
     note.textContent = "Stats aren't connected yet.";
     return;
   }

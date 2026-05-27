@@ -1,12 +1,26 @@
-// T812 home/gallery + photo view with per-photo memories.
-const shelf = document.getElementById("shelf");
-const collectionEl = document.getElementById("collection");
-const gallery = document.getElementById("gallery");
+// T812 home — one flat wall of every Polaroid, plus the per-photo memory view.
+// Display only: the archive folder/semester structure is untouched (see manifest).
+const wall = document.getElementById("wall");
 const metaEl = document.getElementById("meta");
 const lb = document.getElementById("lightbox");
 const origbox = document.getElementById("origbox");
 
 let state = { collections: [], byId: {} };
+
+// The order the groups appear in on the wall.
+const GROUP_ORDER = [
+  "polaroids/roommates",
+  "polaroids/staff",
+  "polaroids/family",
+  "polaroids/2024-25/I",
+  "polaroids/2024-25/II",
+  "polaroids/2025-26/I",
+  "polaroids/2025-26/II",
+];
+// Still-numbered (un-renamed) photos start with the scan's year digits; named
+// ones start with a letter. These get pooled into one group at the very end.
+const isUnnamed = (it) => /^\d/.test(it.title);
+const shortLabel = (c) => c.title.replace(/^Polaroids\s*[·.\-]\s*/i, "");
 
 function fmtDate(d) {
   if (!d) return "";
@@ -18,54 +32,58 @@ function fmtDate(d) {
 }
 const tilt = (i) => `${((i % 5) - 2) * 1.1}deg`;
 
-function renderShelf() {
-  shelf.innerHTML = "";
-  state.collections.forEach((c, i) => {
-    const cover = c.items[0];
-    const a = document.createElement("a");
-    a.className = "chapter";
-    a.href = "#" + encodeURIComponent(c.id);
-    a.style.setProperty("--tilt", tilt(i));
-    a.innerHTML = `
-      ${cover ? `<img class="thumb" loading="lazy" src="${cover.file}" alt="">`
-              : `<div class="thumb"></div>`}
-      <div class="name">${c.emoji ? c.emoji + " " : ""}${c.title}</div>
-      <div class="count">${c.items.length} ${c.items.length === 1 ? "photo" : "photos"}</div>`;
-    a.addEventListener("click", (e) => { e.preventDefault(); openCollection(c.id); });
-    shelf.appendChild(a);
-  });
+function cardEl(entry, i) {
+  const { it, coll } = entry;
+  const card = document.createElement("button");
+  card.className = "card";
+  card.style.setProperty("--tilt", tilt(i));
+  const sub = [fmtDate(it.date), it.by].filter(Boolean).join(" · ");
+  card.innerHTML = `
+    <img loading="lazy" src="${it.file}" alt="${it.title}">
+    <div class="cap">${it.title}</div>
+    ${sub ? `<div class="sub">${sub}</div>` : ""}`;
+  card.addEventListener("click", () => openPhoto(it, coll));
+  return card;
 }
 
-function openCollection(id) {
-  const c = state.byId[id];
-  if (!c) return;
-  location.hash = encodeURIComponent(id);
-  shelf.hidden = true;
-  collectionEl.hidden = false;
-  gallery.innerHTML = "";
-  if (!c.items.length) {
-    gallery.innerHTML = `<p class="empty">Nothing here yet.</p>`;
-    return;
+function sectionEl(label, emoji, entries, startIndex) {
+  const sec = document.createElement("section");
+  sec.className = "wallgroup";
+  const h = document.createElement("h2");
+  h.className = "grouphead";
+  h.innerHTML = `${emoji ? emoji + " " : ""}${label}<span class="grpcount">${entries.length}</span>`;
+  sec.appendChild(h);
+  const grid = document.createElement("div");
+  grid.className = "gallery";
+  entries.forEach((e, k) => grid.appendChild(cardEl(e, startIndex + k)));
+  sec.appendChild(grid);
+  return sec;
+}
+
+function renderWall() {
+  wall.innerHTML = "";
+  // groups in the chosen order, then any future collection not listed above
+  const ordered = GROUP_ORDER.map((id) => state.byId[id]).filter(Boolean);
+  state.collections.forEach((c) => { if (!GROUP_ORDER.includes(c.id)) ordered.push(c); });
+
+  const unnamed = [];
+  let i = 0;
+  ordered.forEach((c) => {
+    c.items.forEach((it) => { if (isUnnamed(it)) unnamed.push({ it, coll: c }); });
+    const named = c.items
+      .filter((it) => !isUnnamed(it))
+      .sort((a, b) => a.title.localeCompare(b.title, undefined, { sensitivity: "base" }))
+      .map((it) => ({ it, coll: c }));
+    if (!named.length) return;
+    wall.appendChild(sectionEl(shortLabel(c), c.emoji, named, i));
+    i += named.length;
+  });
+
+  if (unnamed.length) {
+    unnamed.sort((a, b) =>
+      a.it.title.localeCompare(b.it.title, undefined, { numeric: true }));
+    wall.appendChild(sectionEl("Still to be named", "🗂️", unnamed, i));
   }
-  c.items.forEach((it, i) => {
-    const card = document.createElement("button");
-    card.className = "card";
-    card.style.setProperty("--tilt", tilt(i));
-    const sub = [fmtDate(it.date), it.by].filter(Boolean).join(" · ");
-    card.innerHTML = `
-      <img loading="lazy" src="${it.file}" alt="${it.title}">
-      <div class="cap">${it.title}</div>
-      ${sub ? `<div class="sub">${sub}</div>` : ""}`;
-    card.addEventListener("click", () => openPhoto(it, c));
-    gallery.appendChild(card);
-  });
-  window.scrollTo({ top: 0, behavior: "smooth" });
-}
-
-function backToShelf() {
-  collectionEl.hidden = true;
-  shelf.hidden = false;
-  history.replaceState(null, "", location.pathname);
 }
 
 // ---- photo lightbox ----
@@ -146,7 +164,6 @@ document.getElementById("lightboxClose").addEventListener("click", closeLb);
 lb.addEventListener("click", (e) => { if (e.target === lb) closeLb(); });
 document.getElementById("origClose").addEventListener("click", closeOrig);
 origbox.addEventListener("click", (e) => { if (e.target === origbox) closeOrig(); });
-document.getElementById("backToShelf").addEventListener("click", backToShelf);
 document.addEventListener("keydown", (e) => {
   if (e.key !== "Escape") return;
   if (!origbox.hidden) closeOrig();
@@ -159,12 +176,10 @@ fetch("manifest.json")
     state.collections = d.collections.filter((c) => c.items.length);
     state.collections.forEach((c) => (state.byId[c.id] = c));
     metaEl.textContent = `${d.total_items} memories archived.`;
-    renderShelf();
-    const hash = decodeURIComponent(location.hash.slice(1));
-    if (hash && state.byId[hash]) openCollection(hash);
+    renderWall();
   })
   .catch(() => {
-    shelf.innerHTML = `<p class="empty">Couldn't load <code>manifest.json</code>.
+    wall.innerHTML = `<p class="empty">Couldn't load <code>manifest.json</code>.
       Run <code>python3 scripts/build_manifest.py</code> and serve over http
       (<code>python3 -m http.server</code>).</p>`;
   });

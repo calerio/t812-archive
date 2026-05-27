@@ -22,6 +22,7 @@ from __future__ import annotations
 
 import datetime as dt
 import json
+import re
 from pathlib import Path
 
 ROOT = Path(__file__).resolve().parent.parent
@@ -51,6 +52,19 @@ def title_from_filename(stem: str) -> str:
     return stem.replace("-", " ").replace("_", " ").strip().title()
 
 
+def pretty_part(part: str) -> str:
+    """Make one path segment readable for a collection title.
+
+    Recognises academic-year folders (2024-25 -> 2024/25) and semester folders
+    (I/II -> Sem I/Sem II); otherwise falls back to title-casing.
+    """
+    if re.fullmatch(r"\d{4}-\d{2}", part):
+        return part.replace("-", "/")
+    if re.fullmatch(r"I{1,3}|IV", part, re.IGNORECASE):
+        return "Sem " + part.upper()
+    return title_from_filename(part)
+
+
 def build_item(media: Path) -> dict:
     meta = parse_sidecar(media.with_suffix(".txt"))
     tags = [t.strip() for t in meta.get("tags", "").split(",") if t.strip()]
@@ -65,18 +79,22 @@ def build_item(media: Path) -> dict:
     }
 
 
-def build_collection(folder: Path) -> dict | None:
+def build_collection(folder: Path) -> dict:
+    rel = folder.relative_to(ARCHIVE)
     items = [
         build_item(p)
         for p in sorted(folder.iterdir())
         if p.is_file() and p.suffix.lower() in MEDIA_EXTS
     ]
     meta = parse_sidecar(folder / "_collection.txt")
+    emoji = meta.get("emoji", "")
+    if not emoji and len(rel.parts) > 1:   # sub-folders inherit the parent's emoji
+        emoji = parse_sidecar(ARCHIVE / rel.parts[0] / "_collection.txt").get("emoji", "")
     return {
-        "id": folder.name,
-        "title": meta.get("title") or title_from_filename(folder.name),
+        "id": rel.as_posix(),
+        "title": meta.get("title") or " · ".join(pretty_part(p) for p in rel.parts),
         "description": meta.get("description", ""),
-        "emoji": meta.get("emoji", ""),
+        "emoji": emoji,
         # newest first; undated items sink to the bottom
         "items": sorted(items, key=lambda i: (i["date"] or "0000"), reverse=True),
     }
@@ -85,10 +103,16 @@ def build_collection(folder: Path) -> dict | None:
 def main() -> None:
     collections = []
     if ARCHIVE.exists():
-        for folder in sorted(p for p in ARCHIVE.iterdir() if p.is_dir()):
-            if folder.name.startswith((".", "_")):   # utility/hidden folders
+        # Recurse: any folder that holds media (or declares itself with a
+        # _collection.txt) becomes a collection. Folders that only contain
+        # subfolders (e.g. a year that groups semesters) are skipped.
+        for folder in sorted(p for p in ARCHIVE.rglob("*") if p.is_dir()):
+            rel = folder.relative_to(ARCHIVE)
+            if any(part.startswith((".", "_")) for part in rel.parts):
                 continue
-            collections.append(build_collection(folder))
+            coll = build_collection(folder)
+            if coll["items"] or (folder / "_collection.txt").exists():
+                collections.append(coll)
 
     manifest = {
         "generated": dt.datetime.now(dt.timezone.utc).isoformat(timespec="seconds"),

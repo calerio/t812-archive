@@ -104,9 +104,15 @@ def detect_photos(img, bg, min_area_frac, debug_path=None):
     gray = cv2.cvtColor(img, cv2.COLOR_BGR2GRAY)
     gray = cv2.GaussianBlur(gray, (5, 5), 0)
 
-    # Auto-pick background polarity from the median brightness if not forced.
+    # Auto-pick background polarity from the *margins*, not the whole image:
+    # a sheet packed with white-bordered photos has a bright overall median even
+    # on a black backing, but its outer frame is still the background colour.
     if bg == "auto":
-        bg = "dark" if np.median(gray) < 110 else "light"
+        h, w = gray.shape
+        b = max(8, int(min(h, w) * 0.04))
+        frame = np.concatenate([gray[:b].ravel(), gray[-b:].ravel(),
+                                gray[:, :b].ravel(), gray[:, -b:].ravel()])
+        bg = "dark" if np.median(frame) < 110 else "light"
 
     # Foreground (the photos) should end up white in `mask`.
     if bg == "dark":

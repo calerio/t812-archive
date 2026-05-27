@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-27T15:25:28+00:00",
+  "generated": "2026-05-27T16:36:01+00:00",
   "collections": [
     {
       "id": "letters",
@@ -323,16 +323,6 @@
           "caption": "",
           "tags": [],
           "source": "originals/24:25 I (2).jpg"
-        },
-        {
-          "file": "archive/polaroids/2024-25/I/chris2.jpg",
-          "kind": "image",
-          "title": "chris2",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (4).jpg"
         },
         {
           "file": "archive/polaroids/2024-25/I/dennis.jpg",
@@ -1059,16 +1049,6 @@
           "caption": "",
           "tags": [],
           "source": "originals/25:26 I (1).jpg"
-        },
-        {
-          "file": "archive/polaroids/2025-26/I/avi2.jpg",
-          "kind": "image",
-          "title": "avi2",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/25:26 I (3).jpg"
         },
         {
           "file": "archive/polaroids/2025-26/I/bea.jpg",
@@ -1994,7 +1974,7 @@
     {
       "file": "originals/24:25 I (4).jpg",
       "title": "24:25 I (4)",
-      "crops": 6
+      "crops": 5
     },
     {
       "file": "originals/24:25 II.jpg",
@@ -2014,7 +1994,7 @@
     {
       "file": "originals/25:26 I (3).jpg",
       "title": "25:26 I (3)",
-      "crops": 10
+      "crops": 9
     },
     {
       "file": "originals/25:26 II (1).jpg",
@@ -2042,6 +2022,6 @@
       "crops": 8
     }
   ],
-  "total_items": 191,
+  "total_items": 189,
   "total_originals": 13
 }

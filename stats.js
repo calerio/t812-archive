@@ -21,6 +21,12 @@
       .map((c) => 127397 + c.charCodeAt(0)));
   }
 
+  const PAGE_LABELS = {
+    "index.html": "Gallery", "wall.html": "Memory Wall",
+    "originals.html": "Originals", "stats.html": "Stats",
+  };
+  const pageLabel = (p) => PAGE_LABELS[p] || (p || "").replace(/\.html$/, "") || "Gallery";
+
   async function rpc(fn) {
     const r = await fetch(`${URL}/rest/v1/rpc/${fn}`, {
       method: "POST",
@@ -63,13 +69,19 @@
 
   function timeline(rows) {
     const el = document.getElementById("timeline");
-    if (!rows.length) { el.innerHTML = `<p class="formnote">no visits yet</p>`; return; }
+    if (!rows.length) {
+      el.innerHTML = `<p class="formnote">No visits yet — this chart fills in day by day.</p>`;
+      return;
+    }
     const hi = Math.max(1, ...rows.map((r) => +r.visits || 0));
     el.innerHTML = rows.map((r) => {
       const v = +r.visits || 0;
       const lbl = new Date(r.day).toLocaleDateString(undefined, { day: "numeric", month: "short" });
-      return `<div class="bar1" title="${lbl}: ${v} visit${v === 1 ? "" : "s"}">
-        <span style="height:${Math.max(4, Math.round(v / hi * 100))}%"></span></div>`;
+      return `<div class="bar1">
+        <b>${v}</b>
+        <div class="barcol"><span style="height:${Math.max(6, Math.round(v / hi * 100))}%"></span></div>
+        <i>${lbl}</i>
+      </div>`;
     }).join("");
   }
 
@@ -88,25 +100,37 @@
     const NS = "http://www.w3.org/2000/svg";
     const pins = document.createElementNS(NS, "g");
     pins.setAttribute("class", "pins");
+    const tip = document.getElementById("maptip");
     const hi = Math.max(1, ...geo.map((g) => +g.visits || 0));
     geo.filter((g) => g.lat != null && g.lon != null)
        .sort((a, b) => (+b.visits) - (+a.visits))
        .forEach((g) => {
       const cx = projX(+g.lon), cy = projY(+g.lat);
       const v = +g.visits || 0;
-      const r = 3 + Math.sqrt(v / hi) * 11;
+      const r = 2.2 + Math.sqrt(v / hi) * 3.6;   // gentle range ~2–6 viewBox units
+      const where = [g.city, g.country].filter(Boolean).join(", ") || "Somewhere";
+      const label = `${where} · ${v} visit${v === 1 ? "" : "s"}`;
       const halo = document.createElementNS(NS, "circle");
       halo.setAttribute("class", "pin-halo");
-      halo.setAttribute("cx", cx); halo.setAttribute("cy", cy);
-      halo.setAttribute("r", r + 4);
+      halo.setAttribute("cx", cx); halo.setAttribute("cy", cy); halo.setAttribute("r", r + 3);
       const dot = document.createElementNS(NS, "circle");
       dot.setAttribute("class", "pin");
-      dot.setAttribute("cx", cx); dot.setAttribute("cy", cy);
-      dot.setAttribute("r", r);
-      const title = document.createElementNS(NS, "title");
-      const where = [g.city, g.country].filter(Boolean).join(", ") || "Somewhere";
-      title.textContent = `${where} — ${v} visit${v === 1 ? "" : "s"}`;
-      dot.appendChild(title);
+      dot.setAttribute("cx", cx); dot.setAttribute("cy", cy); dot.setAttribute("r", r);
+      dot.setAttribute("tabindex", "0");
+      dot.setAttribute("aria-label", label);
+      // smooth, custom tooltip (native SVG <title> is laggy)
+      const show = (e) => {
+        tip.textContent = label; tip.hidden = false;
+        const x = (e.touches ? e.touches[0].clientX : e.clientX);
+        const y = (e.touches ? e.touches[0].clientY : e.clientY);
+        tip.style.left = x + "px"; tip.style.top = (y - 14) + "px";
+      };
+      const hide = () => { tip.hidden = true; };
+      dot.addEventListener("mouseenter", show);
+      dot.addEventListener("mousemove", show);
+      dot.addEventListener("mouseleave", hide);
+      dot.addEventListener("focus", show);
+      dot.addEventListener("blur", hide);
       pins.appendChild(halo); pins.appendChild(dot);
     });
     svg.appendChild(pins);
@@ -130,7 +154,7 @@
     bignums(s);
     drawMap(geo);
     list("countries", countries, (r) => `${flag(r.country_code)} ${esc(r.country)}`);
-    list("pages", pages, (r) => esc(r.path));
+    list("pages", pages, (r) => esc(pageLabel(r.path)));
     list("referrers", referrers, (r) => esc(r.referrer));
     // devices summary line + browser bars share the one panel
     const devLine = devices.map((d) => `${esc(d.device)} ${d.visits}`).join(" · ");

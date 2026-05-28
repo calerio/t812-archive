@@ -1,5 +1,5 @@
 {
-  "generated": "2026-05-27T16:36:01+00:00",
+  "generated": "2026-05-28T09:39:50+00:00",
   "collections": [
     {
       "id": "letters",
@@ -75,16 +75,6 @@
           "source": "originals/24:25 I (2).jpg"
         },
         {
-          "file": "archive/polaroids/2024-25/I/24-25-I-b2-10.jpg",
-          "kind": "image",
-          "title": "24-25-I-b2-10",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (2).jpg"
-        },
-        {
           "file": "archive/polaroids/2024-25/I/24-25-I-b2-13.jpg",
           "kind": "image",
           "title": "24-25-I-b2-13",
@@ -108,26 +98,6 @@
           "file": "archive/polaroids/2024-25/I/24-25-I-b2-17.jpg",
           "kind": "image",
           "title": "24-25-I-b2-17",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (2).jpg"
-        },
-        {
-          "file": "archive/polaroids/2024-25/I/24-25-I-b2-18.jpg",
-          "kind": "image",
-          "title": "24-25-I-b2-18",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (2).jpg"
-        },
-        {
-          "file": "archive/polaroids/2024-25/I/24-25-I-b2-20.jpg",
-          "kind": "image",
-          "title": "24-25-I-b2-20",
           "date": "",
           "by": "",
           "caption": "",
@@ -203,16 +173,6 @@
           "caption": "",
           "tags": [],
           "source": "originals/24:25 I (3).jpg"
-        },
-        {
-          "file": "archive/polaroids/2024-25/I/24-25-I-b4-04.jpg",
-          "kind": "image",
-          "title": "24-25-I-b4-04",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (4).jpg"
         },
         {
           "file": "archive/polaroids/2024-25/I/24-25-I-b4-05.jpg",
@@ -335,6 +295,16 @@
           "source": "originals/24:25 I (1).jpg"
         },
         {
+          "file": "archive/polaroids/2024-25/I/divyansh.jpg",
+          "kind": "image",
+          "title": "divyansh",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": [],
+          "source": "originals/24:25 I (2).jpg"
+        },
+        {
           "file": "archive/polaroids/2024-25/I/elena.jpg",
           "kind": "image",
           "title": "elena",
@@ -445,16 +415,6 @@
           "source": "originals/24:25 I (4).jpg"
         },
         {
-          "file": "archive/polaroids/2024-25/I/hot luca.jpg",
-          "kind": "image",
-          "title": "hot luca",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/24:25 I (4).jpg"
-        },
-        {
           "file": "archive/polaroids/2024-25/I/jacopo.jpg",
           "kind": "image",
           "title": "jacopo",
@@ -545,6 +505,16 @@
           "source": "originals/24:25 I (1).jpg"
         },
         {
+          "file": "archive/polaroids/2024-25/I/marguerite.jpg",
+          "kind": "image",
+          "title": "marguerite",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": [],
+          "source": "originals/24:25 I (4).jpg"
+        },
+        {
           "file": "archive/polaroids/2024-25/I/mario.jpg",
           "kind": "image",
           "title": "mario",
@@ -593,6 +563,16 @@
           "caption": "",
           "tags": [],
           "source": "originals/24:25 I (3).jpg"
+        },
+        {
+          "file": "archive/polaroids/2024-25/I/other luca.jpg",
+          "kind": "image",
+          "title": "other luca",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": [],
+          "source": "originals/24:25 I (2).jpg"
         },
         {
           "file": "archive/polaroids/2024-25/I/pierre-luigi.jpg",
@@ -971,16 +951,6 @@
           "source": "originals/25:26 I (2).jpg"
         },
         {
-          "file": "archive/polaroids/2025-26/I/25-26-I-b3-02.jpg",
-          "kind": "image",
-          "title": "25-26-I-b3-02",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/25:26 I (3).jpg"
-        },
-        {
           "file": "archive/polaroids/2025-26/I/adhya.jpg",
           "kind": "image",
           "title": "adhya",
@@ -999,16 +969,6 @@
           "caption": "",
           "tags": [],
           "source": "originals/25:26 I (3).jpg"
-        },
-        {
-          "file": "archive/polaroids/2025-26/I/alejandro.jpg",
-          "kind": "image",
-          "title": "alejandro",
-          "date": "",
-          "by": "",
-          "caption": "",
-          "tags": [],
-          "source": "originals/25:26 I (1).jpg"
         },
         {
           "file": "archive/polaroids/2025-26/I/alessandro.jpg",
@@ -1059,6 +1019,16 @@
           "caption": "",
           "tags": [],
           "source": "originals/25:26 I (2).jpg"
+        },
+        {
+          "file": "archive/polaroids/2025-26/I/carlos.jpg",
+          "kind": "image",
+          "title": "carlos",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": [],
+          "source": "originals/25:26 I (1).jpg"
         },
         {
           "file": "archive/polaroids/2025-26/I/daria.jpg",
@@ -1329,6 +1299,16 @@
           "caption": "",
           "tags": [],
           "source": "originals/25:26 I (2).jpg"
+        },
+        {
+          "file": "archive/polaroids/2025-26/I/thea.jpg",
+          "kind": "image",
+          "title": "thea",
+          "date": "",
+          "by": "",
+          "caption": "",
+          "tags": [],
+          "source": "originals/25:26 I (3).jpg"
         },
         {
           "file": "archive/polaroids/2025-26/I/tomasso.jpg",
@@ -1964,7 +1944,7 @@
     {
       "file": "originals/24:25 I (2).jpg",
       "title": "24:25 I (2)",
-      "crops": 20
+      "crops": 19
     },
     {
       "file": "originals/24:25 I (3).jpg",
@@ -1974,7 +1954,7 @@
     {
       "file": "originals/24:25 I (4).jpg",
       "title": "24:25 I (4)",
-      "crops": 5
+      "crops": 4
     },
     {
       "file": "originals/24:25 II.jpg",
@@ -2022,6 +2002,6 @@
       "crops": 8
     }
   ],
-  "total_items": 189,
+  "total_items": 187,
   "total_originals": 13
 }
